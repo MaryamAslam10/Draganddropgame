@@ -1,0 +1,134 @@
+/* === Body & Wrapper === */
+body {
+  margin:0; padding:0;
+  font-family: 'Poppins', sans-serif;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background: linear-gradient(-45deg, #fdf6e3, #cce5ff, #d0f0c0, #ffd1dc);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
+}
+
+@keyframes gradientBG {
+  0% { background-position:0% 50%; }
+  50% { background-position:100% 50%; }
+  100% { background-position:0% 50%; }
+}
+
+.quiz-wrapper{
+  width:880px;
+  background:#fff;
+  border-radius:12px;
+  padding:22px;
+  box-shadow:0 8px 24px rgba(0,0,0,0.08);
+  text-align:center;
+}
+
+/* === Title === */
+h1 {
+  font-family: 'Luckiest Guy', cursive;
+  font-size: 28px; /* make it bigger if you want */
+  color: #004aad;
+  text-shadow: 2px 2px #fff;
+}
+
+
+/* === Word bank === */
+.word-bank {
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:10px;
+  padding:14px;
+  border-radius:10px;
+  background:#e9f6fa;
+  border:2px dashed #317082;
+  margin-bottom:22px;
+  min-height:64px;
+  align-items:center;
+}
+.word-bank li {
+  display:flex;
+  align-items:center;
+  gap:6px;
+  list-style:none;
+  background: linear-gradient(145deg, #fff176, #ffeb3b);
+  border:1px solid #000;
+  padding:6px 10px;
+  cursor:grab;
+  border-radius:8px;
+  transition: transform .2s ease, background .2s ease;
+}
+.word-bank li:hover {
+  transform: scale(1.06); 
+  background:#ffeb66;
+}
+.word-bank li:active {
+  transform: scale(1.15);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  cursor:grabbing;
+}
+
+/* === Categories === */
+.categories {
+  display:flex;
+  flex-wrap:wrap;
+  gap:18px;
+  justify-content:center;
+  margin-bottom:18px;
+}
+.category {
+  width:200px;
+  background:#fff;
+  border:1px solid #317082;
+  border-radius:10px;
+  overflow:hidden;
+  box-shadow:0 4px 10px rgba(0,0,0,0.06);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.category:hover {
+  transform: scale(1.03);
+  box-shadow:0 6px 20px rgba(0,0,0,0.15);
+}
+.category p {
+  margin:0;
+  padding:9px;
+  background:#317082;
+  color:#fff;
+  font-weight:bold;
+  border-radius:10px 10px 0 0;
+}
+.category ul {
+  min-height:96px;
+  padding:10px;
+  margin:0;
+  list-style:none;
+  background:#f8fbfc;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+.category ul li {
+  display:block;
+  width:100%;
+  text-align:center;
+}
+
+/* === Score & Progress === */
+.score-area { margin-top:10px; display:flex; justify-content:space-between; align-items:center; gap:10px; }
+#scoreDisplay { font-size:16px; font-weight:600; color:#1f3f5a; }
+#checkBtn { background:#317082; color:#fff; padding:8px 12px; border:none; border-radius:8px; cursor:pointer; }
+#checkBtn:hover { opacity:0.95; }
+#progressContainer { width:100%; background:#ddd; border-radius:8px; margin-bottom:10px; }
+#progressBar { width:0%; height:12px; background:#4caf50; border-radius:8px; transition:width 0.3s; }
+
+/* === Correct/Wrong === */
+.correctAnswer { background-color:#7ed957 !important; color:#fff !important; }
+.wrongAnswer { background-color:#ff5c5c !important; color:#fff !important; }
+
+/* === Confetti === */
+#confetti-container { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:9999; overflow:hidden; }
+.confetti { position:absolute; top:-10px; width:8px; height:8px; border-radius:50%; animation: confetti-fall 2s linear forwards; }
+@keyframes confetti-fall { 0% { transform: translateY(0) rotate(0deg); opacity:1; } 100% { transform: translateY(100vh) rotate(360deg); opacity:0; } }

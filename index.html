@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>K-12 General Knowledge Drag & Drop Quiz</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
+
+<div class="quiz-wrapper">
+  <h1>🌍 K-12 General Knowledge <br>(Drag & Drop Game)</h1>
+
+
+
+  <!-- Word bank -->
+  <ul id="wordBank" class="word-bank">
+    <li draggable="true" title="This is a large mammal. 🐘">🐘 Elephant</li>
+    <li draggable="true" title="Bird of prey. 🦅">🦅 Eagle</li>
+    <li draggable="true" title="Largest mammal in the ocean. 🐋">🐋 Whale</li>
+
+    <li draggable="true" title="Our planet 🌍">🌍 Earth</li>
+    <li draggable="true" title="Planet with rings. 🪐">🪐 Saturn</li>
+    <li draggable="true" title="Largest planet. ☁️">☁️ Jupiter</li>
+
+    <li draggable="true" title="City in France. 🗼">🗼 Paris</li>
+    <li draggable="true" title="Capital of Japan. 🗾">🗾 Tokyo</li>
+    <li draggable="true" title="Capital of England. 🏰">🏰 London</li>
+
+    <li draggable="true" title="The Sun ☀️">☀️ Sun</li>
+    <li draggable="true" title="Bright star. ⭐">⭐ Sirius</li>
+    <li draggable="true" title="North Star 🌟">🌟 Polaris</li>
+  </ul>
+
+  <!-- Categories -->
+  <div class="categories">
+    <div class="category">
+      <p>🐾 Animals</p>
+      <ul data-cat="Animals"></ul>
+    </div>
+
+    <div class="category">
+      <p>🪐 Planets</p>
+      <ul data-cat="Planets"></ul>
+    </div>
+
+    <div class="category">
+      <p>🏙️ Cities</p>
+      <ul data-cat="Cities"></ul>
+    </div>
+
+    <div class="category">
+      <p>☀️ Stars</p>
+      <ul data-cat="Stars"></ul>
+    </div>
+  </div>
+  <!-- Progress bar -->
+  <div id="progressContainer">
+    <div id="progressBar"></div>
+  </div>
+
+  <!-- Score area -->
+<div class="score-area">
+  <div id="scoreDisplay">Score: 0 / 12</div>
+  <div>
+
+
+    <button id="checkBtn" type="button">Check My Score</button>
+  </div>
+</div>
+
+</div>
+
+<!-- Confetti container -->
+<div id="confetti-container"></div>
+
+<script>
+/* Correct answers map */
+const correctMap = {
+  "Elephant": "Animals",
+  "Eagle": "Animals",
+  "Whale": "Animals",
+  "Earth": "Planets",
+  "Saturn": "Planets",
+  "Jupiter": "Planets",
+  "Paris": "Cities",
+  "Tokyo": "Cities",
+  "London": "Cities",
+  "Sun": "Stars",
+  "Sirius": "Stars",
+  "Polaris": "Stars"
+};
+
+const wordBank = document.getElementById('wordBank');
+const bankItems = wordBank.querySelectorAll('li');
+const categoryLists = document.querySelectorAll('.category ul');
+const scoreDisplay = document.getElementById('scoreDisplay');
+const checkBtn = document.getElementById('checkBtn');
+
+let dragged = null;
+let celebrationTriggered = false;
+
+/* Make items draggable */
+bankItems.forEach(item => {
+  item.addEventListener('dragstart', e => {
+    dragged = item;
+    setTimeout(() => item.style.display = 'none', 0);
+  });
+  item.addEventListener('dragend', e => {
+    setTimeout(() => {
+      if(item.parentNode) item.style.display = 'flex';
+      dragged = null;
+      updateScore();
+    }, 0);
+  });
+});
+
+/* Allow dropping */
+function allowDragOver(e){ e.preventDefault(); }
+
+/* Drop into category */
+categoryLists.forEach(ul => {
+  ul.addEventListener('dragover', allowDragOver);
+  ul.addEventListener('drop', function(e){
+    e.preventDefault();
+    if(!dragged) return;
+    this.appendChild(dragged);
+    dragged.style.display = 'flex';
+    applyCorrectness(dragged, this);
+    updateScore();
+  });
+});
+
+/* Drop back to bank */
+wordBank.addEventListener('dragover', allowDragOver);
+wordBank.addEventListener('drop', function(e){
+  e.preventDefault();
+  if(!dragged) return;
+  this.appendChild(dragged);
+  dragged.style.display = 'flex';
+  dragged.classList.remove('correctAnswer','wrongAnswer');
+  updateScore();
+});
+
+/* Correct/wrong feedback */
+function applyCorrectness(item, targetUL){
+  const itemText = item.textContent.replace(/[^\w\s]/g,'').trim();
+  const targetCat = targetUL.getAttribute('data-cat') || '';
+  const isCorrect = (correctMap[itemText] === targetCat);
+  item.classList.remove('correctAnswer','wrongAnswer');
+  if(isCorrect){
+    item.classList.add('correctAnswer');
+    // Optional sound: new Audio('sounds/correct.mp3').play();
+  } else {
+    item.classList.add('wrongAnswer');
+    // Optional sound: new Audio('sounds/wrong.mp3').play();
+  }
+}
+
+/* Compute score */
+function computeScore(){
+  let correctCount = 0;
+  categoryLists.forEach(ul => {
+    ul.querySelectorAll('li').forEach(li => {
+      if(li.classList.contains('correctAnswer')) correctCount++;
+    });
+  });
+  return correctCount;
+}
+
+/* Update score & progress bar */
+function updateScore(){
+  const correct = computeScore();
+  scoreDisplay.textContent = `Score: ${correct} / 12`;
+  const progress = Math.floor((correct / 12) * 100);
+  document.getElementById('progressBar').style.width = progress + '%';
+
+  if(correct === 12 && !celebrationTriggered){
+    celebrationTriggered = true;
+    triggerConfetti();
+    const congrats = document.createElement('div');
+    congrats.textContent = "🎉 Awesome! All Correct! 🎉";
+    congrats.style.position = 'fixed';
+    congrats.style.top = '40%';
+    congrats.style.left = '50%';
+    congrats.style.transform = 'translate(-50%, -50%)';
+    congrats.style.fontSize = '2rem';
+    congrats.style.color = '#ff4500';
+    congrats.style.zIndex = '10000';
+    document.body.appendChild(congrats);
+    setTimeout(()=>congrats.remove(),3000);
+  }
+}
+
+/* Check button */
+checkBtn.addEventListener('click', () => {
+  updateScore();
+  const c = computeScore();
+  alert(`You have ${c} correct out of 12.`);
+});
+
+/* Double-click to return item to bank */
+document.addEventListener('dblclick', e => {
+  const target = e.target;
+  if(target && target.tagName === 'LI' && target.parentNode && target.parentNode !== wordBank){
+    wordBank.appendChild(target);
+    target.classList.remove('correctAnswer','wrongAnswer');
+    updateScore();
+  }
+});
+
+/* Shuffle word bank on load */
+function shuffleWordBank() {
+  const items = Array.from(wordBank.children);
+  for (let i = items.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [items[i], items[j]] = [items[j], items[i]];
+  }
+  wordBank.innerHTML = "";
+  items.forEach(item => wordBank.appendChild(item));
+}
+shuffleWordBank();
+updateScore();
+
+/* Confetti */
+function triggerConfetti(){
+  const container = document.getElementById('confetti-container');
+  for(let i=0;i<50;i++){
+    const confetti = document.createElement('div');
+    confetti.classList.add('confetti');
+    confetti.style.left = Math.random() * window.innerWidth + 'px';
+    confetti.style.backgroundColor = `hsl(${Math.random()*360}, 100%, 50%)`;
+    confetti.style.width = confetti.style.height = (5 + Math.random()*10) + 'px';
+    confetti.style.animationDuration = (2 + Math.random()*2) + 's';
+    container.appendChild(confetti);
+    confetti.addEventListener('animationend', ()=>confetti.remove());
+  }
+}
+</script>
+
+</body>
+</html>
